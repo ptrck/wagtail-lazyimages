@@ -1,7 +1,7 @@
 import os
 from setuptools import find_packages, setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
 # allow setup.py to be run from any path
@@ -16,6 +16,7 @@ setup(
     description=('A wagtail plugin that generates tiny blurry '
                  'placeholder images for lazy-loading.'),
     long_description=README,
+    long_description_content_type='text/markdown',
     url='https://github.com/ptrck/wagtail-lazyimages/',
     author='Patrick Dengler',
     author_email='info@patrickdengler.de',
