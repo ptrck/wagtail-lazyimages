@@ -38,7 +38,12 @@ Install using pip:
     <img src="/path/to/placeholder-image.jpg" data-src"/path/to/image.jpg" class="lazy" />
     ```
 
-4. In the front end: Implement the lazy loading functionality yourself or use a dedicated JavaScript library like [lozad.js](https://apoorv.pro/lozad.js).
+4. In the front end: Implement the lazy loading functionality yourself or use a dedicated JavaScript library like [lozad.js](https://apoorv.pro/lozad.js):
+
+    ```
+    const observer = lozad('.lazy');
+    observer.observe();
+    ```
 
 
 ### Image in context variable
