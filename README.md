@@ -54,7 +54,7 @@ If you need to assign the image data to a template variable using Django's `as` 
 
     {% image page.photo width-960 as img %}
 
-    <img data-src="{{ img.url }}" src="{{ img|lazy_url }}" width="{{ img.width }}"
+    <img data-src="{{ img.url }}" src="{{ img|lazy_image_url }}" width="{{ img.width }}"
          height="{{ img.height }}" alt="{{ img.alt }}" />
 
 
