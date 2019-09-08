@@ -2,7 +2,7 @@
 # Wagtail Lazy Images
 
 
-A plugin to automatically generate tiny blurry placeholder images for your wagtail images in order to lazy-load them medium.com style.
+Template tags that generate tiny blurry placeholder images alongside your wagtail images in order to lazy-load them medium.com style.
 
 
 ## Installing
@@ -33,7 +33,7 @@ Install using pip:
     {% lazy_image page.photo width-960 class="lazy" %}
     ```
 
-    This template tag behaves exactly the same way as the `images` tag with the exception that it generates an additional small and blurred image. The URL of this image will appear in the `src` attribute of the image while the larger version will be referenced in `data-src`:
+    This template tag behaves just like wagtail's `image` tag with the exception that it generates an additional scaled down and blurred placeholder image. The URL of the placeholder image will appear in the `src` attribute of the image tag while the large version will be referenced in `data-src`:
     ```
     <img src="/path/to/placeholder-image.jpg" data-src"/path/to/image.jpg" class="lazy" />
     ```
