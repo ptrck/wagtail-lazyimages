@@ -28,7 +28,7 @@ def _get_placeholder_url(rendition):
     return rendition.url.replace(rendition.file.name, lazy_img_path)
 
 
-@register.filter
+@register.simple_tag
 def lazy_image_url(rendition):
     return _get_placeholder_url(rendition)
 

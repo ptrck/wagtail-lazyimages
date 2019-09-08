@@ -48,13 +48,13 @@ Install using pip:
 
 ### Image in context variable
 
-If you need to assign the image data to a template variable using Django's `as` syntax, use the provided filter for the placeholder image URL:
+If you need to assign the image data to a template variable using Django's `as` syntax, use the provided `lazy_image_url` template tag for getting just the URL of the placeholder image:
 
     {% load "lazyimages_tags" %}
 
     {% image page.photo width-960 as img %}
 
-    <img data-src="{{ img.url }}" src="{{ img|lazy_image_url }}" width="{{ img.width }}"
+    <img data-src="{{ img.url }}" src="{% lazy_image_url img %}" width="{{ img.width }}"
          height="{{ img.height }}" alt="{{ img.alt }}" />
 
 
