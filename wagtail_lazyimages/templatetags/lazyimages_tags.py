@@ -38,10 +38,15 @@ class LazyImageNode(ImageNode):
         img_tag = super().render(context)
         image = self.image_expr.resolve(context)
         rendition = get_rendition_or_not_found(image, self.filter)
-        placeholder_url = _get_placeholder_url(rendition)
         if img_tag:
-            img_tag = img_tag.replace(
-                "src=", "src=\"{}\" data-src=".format(placeholder_url))
+            lazy_attr = str(self.attrs.pop("lazy_attr", '"data-src"'))[1:-1]
+            attrs = {
+                "src": _get_placeholder_url(rendition),
+                lazy_attr: rendition.url,
+            }
+            for key in self.attrs:
+                attrs[key] = self.attrs[key].resolve(context)
+            img_tag = rendition.img_tag(attrs)
         return img_tag
 
 
