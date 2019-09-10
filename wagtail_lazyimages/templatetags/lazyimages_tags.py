@@ -3,8 +3,16 @@ from io import BytesIO
 from django import template
 from django.core.files.base import ContentFile
 from PIL import Image, ImageFilter
-from wagtail.images.templatetags.wagtailimages_tags import image, ImageNode
-from wagtail.images.shortcuts import get_rendition_or_not_found
+
+try:
+    # Wagtail 2.x
+    from wagtail.images.shortcuts import get_rendition_or_not_found
+    from wagtail.images.templatetags.wagtailimages_tags import image, ImageNode
+except ImportError:
+    # Wagtail 1.x
+    from wagtail.wagtailimages.shortcuts import get_rendition_or_not_found
+    from wagtail.wagtailimages.templatetags.wagtailimages_tags import (
+        image, ImageNode)
 
 register = template.Library()
 
@@ -37,9 +45,11 @@ class LazyImageNode(ImageNode):
     def render(self, context):
         img_tag = super().render(context)
         image = self.image_expr.resolve(context)
+        if not image:
+            return ""
         rendition = get_rendition_or_not_found(image, self.filter)
         if img_tag:
-            lazy_attr = str(self.attrs.pop("lazy_attr", '"data-src"'))[1:-1]
+            lazy_attr = str(self.attrs.pop('lazy_attr', '"data-src"'))[1:-1]
             attrs = {
                 "src": _get_placeholder_url(rendition),
                 lazy_attr: rendition.url,
