@@ -23,7 +23,7 @@ def _get_placeholder_url(rendition):
 
     # Resize and blur image
     img.thumbnail([128, 128])
-    lazy_img = img.filter(ImageFilter.GaussianBlur(3))
+    lazy_img = img.convert("RGB").filter(ImageFilter.GaussianBlur(3))
 
     lazy_img_io = BytesIO()
     lazy_img.save(lazy_img_io, format=img.format)
