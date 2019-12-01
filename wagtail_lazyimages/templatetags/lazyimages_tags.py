@@ -23,13 +23,18 @@ def _get_placeholder_url(rendition):
         return
 
     img = Image.open(storage.open(rendition.file.name, "rb"))
+    img_format = img.format
 
     # Resize and blur image
     img.thumbnail([128, 128])
-    lazy_img = img.convert("RGB").filter(ImageFilter.GaussianBlur(3))
+
+    if img.mode != "RGBA":
+        img = img.convert("RGB")
+
+    lazy_img = img.filter(ImageFilter.GaussianBlur(3))
 
     lazy_img_io = BytesIO()
-    lazy_img.save(lazy_img_io, format=img.format)
+    lazy_img.save(lazy_img_io, format=img_format)
 
     lazy_img_path = "{}_lazy.{}".format(*rendition.file.name.rsplit(".", 1))
     if not storage.exists(lazy_img_path):
