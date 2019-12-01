@@ -19,6 +19,9 @@ register = template.Library()
 
 def _get_placeholder_url(rendition):
     storage = rendition.image._meta.get_field("file").storage
+    if not storage.exists(rendition.file.name):
+        return
+
     img = Image.open(storage.open(rendition.file.name, "rb"))
 
     # Resize and blur image
