@@ -25,10 +25,10 @@ def _get_placeholder_url(rendition):
     img = Image.open(storage.open(rendition.file.name, "rb"))
     img_format = img.format
 
-    # Resize and blur image
     img.thumbnail([128, 128])
 
-    if img.mode != "RGBA":
+    # Gaussian filter needs RGB(A) mode so we convert anything else to RGB first
+    if img.mode not in ("RGB", "RGBA"):
         img = img.convert("RGB")
 
     lazy_img = img.filter(ImageFilter.GaussianBlur(3))
