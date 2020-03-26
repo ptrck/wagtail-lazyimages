@@ -22,7 +22,7 @@ def _generate_placeholder_image(rendition, path, storage):
         img_format = img.format
         img.thumbnail([128, 128])
 
-        # Gaussian filter needs RGB(A) mode so we convert anything else to RGB first
+        # Gaussian filter needs RGB(A) so we convert anything else to RGB first
         if img.mode not in ("RGB", "RGBA"):
             img = img.convert("RGB")
 
