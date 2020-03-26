@@ -17,31 +17,34 @@ except ImportError:
 register = template.Library()
 
 
+def _generate_placeholder_image(rendition, path, storage):
+    with Image.open(storage.open(rendition.file.name, "rb")) as img:
+        img.thumbnail([128, 128])
+
+        # Gaussian filter needs RGB(A) mode so we convert anything else to RGB first
+        if img.mode not in ("RGB", "RGBA"):
+            img = img.convert("RGB")
+
+        lazy_img = img.filter(ImageFilter.GaussianBlur(3))
+
+        lazy_img_io = BytesIO()
+        lazy_img.save(lazy_img_io, format=img.format)
+        cf = ContentFile(lazy_img_io.getvalue(), path)
+        storage.save(path, cf)
+
+
 def _get_placeholder_url(rendition):
     storage = rendition.image._meta.get_field("file").storage
     if not storage.exists(rendition.file.name):
         return
 
-    img = Image.open(storage.open(rendition.file.name, "rb"))
-    img_format = img.format
-
-    img.thumbnail([128, 128])
-
-    # Gaussian filter needs RGB(A) mode so we convert anything else to RGB first
-    if img.mode not in ("RGB", "RGBA"):
-        img = img.convert("RGB")
-
-    lazy_img = img.filter(ImageFilter.GaussianBlur(3))
-
-    lazy_img_io = BytesIO()
-    lazy_img.save(lazy_img_io, format=img_format)
-
     lazy_img_path = "{}_lazy.{}".format(*rendition.file.name.rsplit(".", 1))
-    if not storage.exists(lazy_img_path):
-        cf = ContentFile(lazy_img_io.getvalue(), lazy_img_path)
-        lazy_img_path = storage.save(lazy_img_path, cf)
+    lazy_url = rendition.url.replace(rendition.file.name, lazy_img_path)
 
-    return rendition.url.replace(rendition.file.name, lazy_img_path)
+    if not storage.exists(lazy_img_path):
+        _generate_placeholder_image(rendition, lazy_img_path, storage)
+
+    return lazy_url
 
 
 class LazyImageNode(ImageNode):
