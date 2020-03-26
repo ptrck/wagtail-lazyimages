@@ -19,6 +19,7 @@ register = template.Library()
 
 def _generate_placeholder_image(rendition, path, storage):
     with Image.open(storage.open(rendition.file.name, "rb")) as img:
+        img_format = img.format
         img.thumbnail([128, 128])
 
         # Gaussian filter needs RGB(A) mode so we convert anything else to RGB first
@@ -28,7 +29,7 @@ def _generate_placeholder_image(rendition, path, storage):
         lazy_img = img.filter(ImageFilter.GaussianBlur(3))
 
         lazy_img_io = BytesIO()
-        lazy_img.save(lazy_img_io, format=img.format)
+        lazy_img.save(lazy_img_io, format=img_format)
         cf = ContentFile(lazy_img_io.getvalue(), path)
         storage.save(path, cf)
 
