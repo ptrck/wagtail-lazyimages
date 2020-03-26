@@ -11,8 +11,7 @@ try:
 except ImportError:
     # Wagtail 1.x
     from wagtail.wagtailimages.shortcuts import get_rendition_or_not_found
-    from wagtail.wagtailimages.templatetags.wagtailimages_tags import (
-        image, ImageNode)
+    from wagtail.wagtailimages.templatetags.wagtailimages_tags import image, ImageNode
 
 register = template.Library()
 
@@ -44,28 +43,23 @@ def _get_placeholder_url(rendition):
     return rendition.url.replace(rendition.file.name, lazy_img_path)
 
 
-@register.simple_tag
-def lazy_image_url(rendition):
-    return _get_placeholder_url(rendition)
-
-
 class LazyImageNode(ImageNode):
     def render(self, context):
-        img_tag = super().render(context)
         image = self.image_expr.resolve(context)
         if not image:
             return ""
+
         rendition = get_rendition_or_not_found(image, self.filter)
-        if img_tag:
-            lazy_attr = str(self.attrs.pop('lazy_attr', '"data-src"'))[1:-1]
-            attrs = {
-                "src": _get_placeholder_url(rendition),
-                lazy_attr: rendition.url,
-            }
-            for key in self.attrs:
-                attrs[key] = self.attrs[key].resolve(context)
-            img_tag = rendition.img_tag(attrs)
-        return img_tag
+        rendition.lazy_url = _get_placeholder_url(rendition)
+
+        lazy_attr = str(self.attrs.pop("lazy_attr", '"data-src"'))[1:-1]
+        lazy_attrs = {"src": rendition.lazy_url, lazy_attr: rendition.url}
+
+        if self.output_var_name:
+            context[self.output_var_name] = rendition
+            return ""
+
+        return rendition.img_tag(lazy_attrs)
 
 
 @register.tag(name="lazy_image")
@@ -75,5 +69,5 @@ def lazy_image(parser, token):
         node.image_expr,
         node.filter_spec,
         attrs=node.attrs,
-        output_var_name=node.output_var_name
+        output_var_name=node.output_var_name,
     )

@@ -65,7 +65,7 @@ class TestLazyImageTemplateTag(TestCase):
         template = Template(
             "{% load lazyimages_tags %}"
             "{% lazy_image image width-960 as img %}"
-            "{% lazy_image_url img %}"
+            "{{ img.lazy_url }}"
         )
         rendered = template.render(Context({'image': self.image}))
         self.assertIn(self._get_lazy_path(self.rendition.url), rendered)
