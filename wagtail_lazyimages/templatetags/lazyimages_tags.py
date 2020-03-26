@@ -58,15 +58,18 @@ class LazyImageNode(ImageNode):
         rendition.lazy_url = _get_placeholder_url(rendition)
 
         lazy_attr = str(self.attrs.pop("lazy_attr", '"data-src"'))[1:-1]
-        lazy_attrs = {"src": rendition.lazy_url, lazy_attr: rendition.url}
+
+        attrs = {"src": rendition.lazy_url, lazy_attr: rendition.url}
+        for key in self.attrs:
+            attrs[key] = self.attrs[key].resolve(context)
 
         if self.output_var_name:
-            attrs = dict(rendition.attrs_dict, **lazy_attrs)
-            rendition.lazy_attrs = flatatt(attrs)
+            lazy_attrs = dict(rendition.attrs_dict, **attrs)
+            rendition.lazy_attrs = flatatt(lazy_attrs)
             context[self.output_var_name] = rendition
             return ""
 
-        return rendition.img_tag(lazy_attrs)
+        return rendition.img_tag(attrs)
 
 
 @register.tag(name="lazy_image")

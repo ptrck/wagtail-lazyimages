@@ -70,7 +70,15 @@ class TestLazyImageTemplateTag(TestCase):
         rendered = template.render(Context({'image': self.image}))
         self.assertIn(self._get_lazy_path(self.rendition.url), rendered)
 
-    def test_attrs(self):
+    def test_custom_attrs(self):
+        template = Template(
+            '{% load lazyimages_tags %}'
+            '{% lazy_image image width-960 class="custom-class" %}'
+        )
+        rendered = template.render(Context({"image": self.image}))
+        self.assertIn('class="custom-class"', rendered)
+
+    def test_attrs_shortcut(self):
         template = Template(
             "{% load lazyimages_tags %}"
             "{% lazy_image image width-960 as img %}"
