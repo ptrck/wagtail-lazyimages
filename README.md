@@ -63,3 +63,14 @@ If you need to assign the image data to a template variable using Django's `as` 
 
     <img data-src="{{ img.url }}" src="{{ img.lazy_url }}" width="{{ img.width }}"
          height="{{ img.height }}" alt="{{ img.alt }}" />
+
+
+### `attrs` shortcut
+
+In case you need to use Wagtail's [`attrs shortcut`](https://docs.wagtail.io/en/stable/topics/images.html#the-attrs-shortcut) use `lazy_attrs` instead:
+
+    {% load "lazyimages_tags" %}
+
+    {% image page.photo width-960 as img %}
+
+    <img {{ img.lazy_attrs }} class="custom-class" />

@@ -2,6 +2,7 @@ from io import BytesIO
 
 from django import template
 from django.core.files.base import ContentFile
+from django.forms.utils import flatatt
 from PIL import Image, ImageFilter
 
 try:
@@ -56,6 +57,8 @@ class LazyImageNode(ImageNode):
         lazy_attrs = {"src": rendition.lazy_url, lazy_attr: rendition.url}
 
         if self.output_var_name:
+            attrs = dict(rendition.attrs_dict, **lazy_attrs)
+            rendition.lazy_attrs = flatatt(attrs)
             context[self.output_var_name] = rendition
             return ""
 

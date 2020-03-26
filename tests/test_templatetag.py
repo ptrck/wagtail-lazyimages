@@ -70,13 +70,32 @@ class TestLazyImageTemplateTag(TestCase):
         rendered = template.render(Context({'image': self.image}))
         self.assertIn(self._get_lazy_path(self.rendition.url), rendered)
 
-    def test_lazy_attr(self):
+    def test_attrs(self):
         template = Template(
-            '{% load lazyimages_tags %}'
-            '{% lazy_image image width-960 lazy_attr="data-orig-url" %}'
+            "{% load lazyimages_tags %}"
+            "{% lazy_image image width-960 as img %}"
+            "<img{{ img.lazy_attrs }} class=\"custom-class\" />"
         )
         rendered = template.render(Context({'image': self.image}))
-        lazy_url = self._get_lazy_path(self.rendition.url)
-        self.assertIn('data-orig-url="{}"'.format(self.rendition.url), rendered)
-        self.assertIn('src="{}"'.format(lazy_url), rendered)
-        self.assertNotIn('lazy_attr', rendered)
+        self.assertIn(
+            '<img alt="Test" data-src="{}" height="540" '
+            'src="{}" width="960" class="custom-class" />'.format(
+                self.rendition.url, lazy_url
+            ),
+            rendered
+        )
+
+    def test_attrs(self):
+        template = Template(
+            "{% load lazyimages_tags %}"
+            "{% lazy_image image width-960 as img %}"
+            '<img{{ img.lazy_attrs }} class="custom-class" />'
+        )
+        rendered = template.render(Context({"image": self.image}))
+        self.assertIn(
+            '<img alt="Test" data-src="{}" height="540" src="{}" '
+            'width="960" class="custom-class" />'.format(
+                self.rendition.url, self._get_lazy_path(self.rendition.url)
+            ),
+            rendered,
+        )
