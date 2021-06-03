@@ -39,11 +39,14 @@ def _get_placeholder_url(rendition):
     if not storage.exists(rendition.file.name):
         return
 
-    lazy_img_path = "{}_lazy.{}".format(*rendition.file.name.rsplit(".", 1))
-    lazy_url = rendition.url.replace(rendition.file.name, lazy_img_path)
+    try:
+        lazy_url = storage.url(rendition.file.name + "_lazy") # regenerate url if using urls
+    except NotImplementedError: # for storage backends without url access
+        lazy_img_path = "{}_lazy.{}".format(*rendition.file.name.rsplit(".", 1))
+        lazy_url = rendition.url.replace(rendition.file.name, lazy_img_path)
 
-    if not storage.exists(lazy_img_path):
-        _generate_placeholder_image(rendition, lazy_img_path, storage)
+        if not storage.exists(lazy_img_path):
+            _generate_placeholder_image(rendition, lazy_img_path, storage)
 
     return lazy_url
 
